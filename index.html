@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Birthday Surprise!</title>
+    <title>Interactive Birthday Surprise!</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
@@ -22,31 +22,37 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            /* Darker, animated gradient background */
-            background: linear-gradient(135deg, #8A2BE2, #C71585, #4b0082); /* Blue Violet -> Medium Violet Red -> Indigo */
+            /* Initial Gradient Background */
+            background: linear-gradient(135deg, #8A2BE2, #C71585, #4b0082);
             background-size: 200% 200%;
             animation: animateGradient 15s ease infinite;
-            overflow: hidden; /* Prevent scrollbars during animations */
+            overflow: hidden;
             color: #ffffff;
-            position: relative; /* Needed for absolute positioning of cake */
+            position: relative;
+            transition: background 1.5s ease-in-out; /* Smooth background transition */
         }
 
-        /* Keyframes for the background gradient animation */
+        /* Keyframes for the initial background gradient animation */
         @keyframes animateGradient {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
 
-        /* Container for the text lines */
+        /* --- New Background Theme --- */
+        body.theme-celebration {
+            background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e); /* Dark starry night gradient */
+            animation: none; /* Stop initial gradient animation */
+            /* Add subtle stars using pseudo-elements or multiple backgrounds if desired */
+        }
+
+        /* --- Text Styling (Mostly unchanged) --- */
         .text-container {
             text-align: center;
             padding: 20px;
-            position: relative; /* To contain absolute positioned elements if needed */
-            z-index: 1; /* Keep text above cake initially */
+            position: relative;
+            z-index: 1;
         }
-
-        /* Styling for each line of text */
         .text-line {
             display: block;
             font-size: 2.8rem;
@@ -55,89 +61,130 @@
             transform: translateY(25px) scale(0.9);
             text-shadow: 0 0 5px rgba(255, 255, 255, 0.7),
                          0 0 10px rgba(255, 192, 203, 0.5);
-            /* Initial appearance animation */
             animation: fadeInSlideUpScale 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
-
-        /* Keyframes for the initial text appearance */
         @keyframes fadeInSlideUpScale {
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
-
-        /* Staggering the initial animation delays */
         .text-line:nth-child(1) { animation-delay: 0.5s; }
         .text-line:nth-child(2) { animation-delay: 2.3s; }
         .text-line:nth-child(3) { animation-delay: 4.1s; }
         .text-line:nth-child(4) { animation-delay: 5.9s; }
         .text-line:nth-child(5) { animation-delay: 7.7s; }
-        .text-line:nth-child(6) { animation-delay: 9.5s; } /* Last text appears */
+        .text-line:nth-child(6) { animation-delay: 9.5s; }
 
-        /* --- Animations for text moving off-screen --- */
-
-        /* Class added by JS to trigger move left */
-        .text-line.move-left {
-            animation: moveLeft 1.5s ease-in forwards;
-        }
-        /* Class added by JS to trigger move right */
-        .text-line.move-right {
-            animation: moveRight 1.5s ease-in forwards;
-        }
-
-        /* Keyframes for moving text left */
+        /* Text move animations (unchanged) */
+        .text-line.move-left { animation: moveLeft 1.5s ease-in forwards; }
+        .text-line.move-right { animation: moveRight 1.5s ease-in forwards; }
         @keyframes moveLeft {
             0% { transform: translateX(0) scale(1); opacity: 1; }
-            100% { transform: translateX(-150vw) scale(0.8); opacity: 0; } /* Move far left, shrink slightly, fade */
+            100% { transform: translateX(-150vw) scale(0.8); opacity: 0; }
         }
-
-        /* Keyframes for moving text right */
         @keyframes moveRight {
              0% { transform: translateX(0) scale(1); opacity: 1; }
-            100% { transform: translateX(150vw) scale(0.8); opacity: 0; } /* Move far right, shrink slightly, fade */
+            100% { transform: translateX(150vw) scale(0.8); opacity: 0; }
         }
 
-        /* --- Cake Styling and Animation --- */
-
+        /* --- Cake Styling and Animations --- */
         .cake-container {
-            position: absolute; /* Position relative to body */
+            position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%); /* Center the container */
-            opacity: 0; /* Start hidden */
-            transform-origin: center bottom; /* Scale from the bottom center */
-            z-index: 0; /* Initially behind text (or doesn't matter when text is gone) */
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transform-origin: center bottom;
+            z-index: 0;
+            cursor: pointer; /* Indicate it's clickable */
+            transition: opacity 0.5s, transform 0.5s; /* Smooth transitions */
+        }
+        .cake-container.visible {
+            animation: cakeAppear 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+            z-index: 2;
+        }
+        @keyframes cakeAppear {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            70% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
 
-        .cake-container.visible {
-             /* Cake appearance animation */
-            animation: cakeAppear 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards; /* Bouncy easing */
-            z-index: 2; /* Ensure cake is on top when visible */
+        /* Cake Pop Animation */
+        .cake-container.popped {
+            animation: cakePop 0.5s ease-out forwards;
+            pointer-events: none; /* Disable further clicks */
+        }
+        @keyframes cakePop {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; } /* Slightly expand */
+            100% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } /* Shrink and fade */
         }
 
         #birthday-cake-svg {
-            width: 150px; /* Adjust size as needed */
+            width: 150px;
             height: auto;
             display: block;
-            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3)); /* Add a shadow */
+            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
         }
 
-        /* Keyframes for cake appearing */
-        @keyframes cakeAppear {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } /* Start small and transparent */
-            70% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } /* Overshoot scale slightly */
-            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); } /* Settle at final size */
+        /* --- Balloon Styling and Animations --- */
+        #balloon-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none; /* Initially ignore clicks */
+            z-index: 3; /* Balloons float above everything */
+        }
+
+        .balloon {
+            position: absolute;
+            bottom: -150px; /* Start below screen */
+            width: 60px;
+            height: 75px;
+            background-color: red; /* Default color, will be randomized */
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; /* Balloon shape */
+            cursor: pointer;
+            pointer-events: auto; /* Balloons themselves are clickable */
+            animation: floatUp 10s linear infinite; /* Float animation */
+            /* Add a string */
+            display: flex;
+            justify-content: center;
+        }
+        .balloon::after {
+            content: '';
+            position: absolute;
+            bottom: -20px; /* Position string below balloon */
+            width: 1px;
+            height: 25px; /* String length */
+            background-color: rgba(255, 255, 255, 0.7); /* Light grey string */
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-120vh); } /* Float up and off screen */
+        }
+
+        /* Balloon Pop Animation */
+        .balloon.popped {
+            animation: balloonPop 0.3s ease-out forwards;
+            pointer-events: none; /* Disable clicks once popped */
+        }
+        @keyframes balloonPop {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; } /* Expand and fade */
         }
 
         /* Responsive adjustments */
         @media (max-width: 600px) {
             .text-line { font-size: 2rem; }
             #birthday-cake-svg { width: 120px; }
+            .balloon { width: 50px; height: 65px; }
         }
          @media (max-width: 400px) {
             .text-line { font-size: 1.7rem; }
             #birthday-cake-svg { width: 100px; }
+            .balloon { width: 40px; height: 55px; }
         }
     </style>
 </head>
@@ -153,7 +200,16 @@
 
     <div class="cake-container" id="cakeContainer">
         <svg id="birthday-cake-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <rect x="15" y="60" width="70" height="25" rx="5" ry="5" fill="#C71585"/> <rect x="20" y="40" width="60" height="20" rx="4" ry="4" fill="#FFC0CB"/> <rect x="25" y="25" width="50" height="15" rx="3" ry="3" fill="#E6E6FA"/> <rect x="35" y="15" width="5" height="15" fill="#FFF"/> <ellipse cx="37.5" cy="15" rx="2.5" ry="1.5" fill="#FFA500"/> <rect x="47.5" y="10" width="5" height="20" fill="#FFF"/> <ellipse cx="50" cy="10" rx="2.5" ry="1.5" fill="#FF8C00"/> <rect x="60" y="15" width="5" height="15" fill="#FFF"/> <ellipse cx="62.5" cy="15" rx="2.5" ry="1.5" fill="#FFA500"/> <circle cx="25" cy="32.5" r="5" fill="#E6E6FA"/>
+            <rect x="15" y="60" width="70" height="25" rx="5" ry="5" fill="#C71585"/>
+            <rect x="20" y="40" width="60" height="20" rx="4" ry="4" fill="#FFC0CB"/>
+            <rect x="25" y="25" width="50" height="15" rx="3" ry="3" fill="#E6E6FA"/>
+            <rect x="35" y="15" width="5" height="15" fill="#FFF"/>
+            <ellipse cx="37.5" cy="15" rx="2.5" ry="1.5" fill="#FFA500"/>
+            <rect x="47.5" y="10" width="5" height="20" fill="#FFF"/>
+            <ellipse cx="50" cy="10" rx="2.5" ry="1.5" fill="#FF8C00"/>
+            <rect x="60" y="15" width="5" height="15" fill="#FFF"/>
+            <ellipse cx="62.5" cy="15" rx="2.5" ry="1.5" fill="#FFA500"/>
+            <circle cx="25" cy="32.5" r="5" fill="#E6E6FA"/>
             <circle cx="35" cy="32.5" r="5" fill="#E6E6FA"/>
             <circle cx="45" cy="32.5" r="5" fill="#E6E6FA"/>
             <circle cx="55" cy="32.5" r="5" fill="#E6E6FA"/>
@@ -162,63 +218,129 @@
         </svg>
     </div>
 
+    <div id="balloon-container"></div>
+
     <script>
-        // Get references to elements
+        // DOM References
         const textLines = document.querySelectorAll('.text-line');
         const cakeContainer = document.getElementById('cakeContainer');
+        const balloonContainer = document.getElementById('balloon-container');
+        const body = document.body;
 
         // --- Configuration ---
-        const lastTextAnimationDelay = 9.5; // seconds (from CSS)
-        const textAppearDuration = 1.8; // seconds (from CSS)
-        const pauseBeforeTextMove = 1.5; // seconds (pause after last text appears)
-        const textMoveDuration = 1.5; // seconds (from CSS)
-        const pauseBeforeTextMoveTrigger = 0.1; // Small buffer before triggering move
-        const pauseBeforeCakeAppear = 0.5; // seconds (delay after text starts moving)
+        const lastTextAnimationDelay = 9.5; // s
+        const textAppearDuration = 1.8; // s
+        const pauseBeforeTextMove = 1.5; // s
+        const pauseBeforeCakeAppear = 0.5; // s
+        const cakePopDuration = 0.5; // s (match CSS animation)
+        const balloonPopDuration = 0.3; // s (match CSS animation)
+        const balloonInterval = 1500; // ms (how often new balloons appear)
+        let balloonTimerId = null; // To store the interval ID
 
-        // Calculate when the last text finishes appearing
-        const lastTextEndTime = (lastTextAnimationDelay + textAppearDuration) * 1000; // in milliseconds
-
-        // Calculate when to trigger the text move animation
+        // --- Timing Calculations ---
+        const lastTextEndTime = (lastTextAnimationDelay + textAppearDuration) * 1000;
         const textMoveStartTime = lastTextEndTime + (pauseBeforeTextMove * 1000);
-
-        // Calculate when to trigger the cake appearance
-        // It should start slightly after the text *starts* moving
         const cakeAppearStartTime = textMoveStartTime + (pauseBeforeCakeAppear * 1000);
 
+        // --- Balloon Colors ---
+        const balloonColors = ['#ff6b6b', '#f06595', '#cc5de8', '#845ef7', '#5c7cfa', '#339af0', '#22b8cf', '#20c997', '#51cf66', '#fcc419', '#ff922b'];
 
-        // --- Set Timeouts ---
+        // --- Functions ---
+
+        // Function to create a single balloon
+        function createBalloon() {
+            const balloon = document.createElement('div');
+            balloon.classList.add('balloon');
+
+            // Randomize properties
+            const randomColor = balloonColors[Math.floor(Math.random() * balloonColors.length)];
+            const randomLeft = Math.random() * 90; // % position from left (0-90 to avoid edge)
+            const randomDuration = Math.random() * 5 + 8; // Float duration between 8-13 seconds
+
+            balloon.style.backgroundColor = randomColor;
+            balloon.style.left = `${randomLeft}%`;
+            balloon.style.animationDuration = `${randomDuration}s`; // Vary float speed
+
+            // Add pop event listener
+            balloon.addEventListener('click', () => {
+                popBalloon(balloon);
+            }, { once: true }); // Listener only fires once
+
+            // Add listener for when animation ends (balloon floats off screen)
+            balloon.addEventListener('animationend', (event) => {
+                 // Only remove if it's the 'floatUp' animation ending, not the 'balloonPop'
+                 if (event.animationName === 'floatUp' && balloon.parentNode) {
+                     balloon.remove();
+                 }
+            });
+
+
+            balloonContainer.appendChild(balloon);
+        }
+
+        // Function to pop a balloon
+        function popBalloon(balloon) {
+            balloon.classList.add('popped');
+            // Remove the balloon element after the pop animation finishes
+            setTimeout(() => {
+                if (balloon.parentNode) { // Check if it hasn't already been removed
+                    balloon.remove();
+                }
+            }, balloonPopDuration * 1000);
+        }
+
+        // Function to start the stream of balloons
+        function startBalloonStream() {
+            if (balloonTimerId === null) { // Prevent multiple intervals
+                 // Enable clicks within the balloon container area
+                balloonContainer.style.pointerEvents = 'auto';
+                // Start creating balloons
+                balloonTimerId = setInterval(createBalloon, balloonInterval);
+                console.log("Balloon stream started.");
+            }
+        }
+
+        // Function to handle cake click
+        function handleCakeClick() {
+            console.log("Cake clicked!");
+            // 1. Add 'popped' class to cake for animation
+            cakeContainer.classList.add('popped');
+
+            // 2. Change background theme
+            body.classList.add('theme-celebration');
+
+            // 3. Remove cake from DOM after pop animation (optional, but cleans up)
+            setTimeout(() => {
+                cakeContainer.style.display = 'none';
+            }, cakePopDuration * 1000);
+
+            // 4. Start the balloon stream
+            startBalloonStream();
+
+            // Remove the event listener so it can't be clicked again
+            cakeContainer.removeEventListener('click', handleCakeClick);
+        }
+
+
+        // --- Set Initial Timeouts & Event Listeners ---
 
         // 1. Trigger text movement
         setTimeout(() => {
-            console.log("Triggering text move animations...");
             textLines.forEach((line, index) => {
-                // Alternate left and right movement
-                if (index % 2 === 0) { // Even index (0, 2, 4)
-                    line.classList.add('move-left');
-                } else { // Odd index (1, 3, 5)
-                    line.classList.add('move-right');
-                }
-                // Ensure the initial animation doesn't interfere if somehow still running
-                 line.style.animation = 'none'; // Clear initial animation just in case
-                 // Force reflow/repaint before applying new animation
-                 void line.offsetWidth;
-                 line.style.animation = ''; // Re-enable CSS-defined animations
-
-                 if (index % 2 === 0) {
-                     line.classList.add('move-left');
-                 } else {
-                     line.classList.add('move-right');
-                 }
+                line.classList.add(index % 2 === 0 ? 'move-left' : 'move-right');
             });
         }, textMoveStartTime);
 
         // 2. Trigger cake appearance
         setTimeout(() => {
-            console.log("Triggering cake appearance...");
             cakeContainer.classList.add('visible');
+            // Add click listener ONLY after the cake is visible and animation likely started
+            cakeContainer.addEventListener('click', handleCakeClick);
+             console.log("Cake appeared, listener added.");
         }, cakeAppearStartTime);
 
-        console.log(`Setup complete. Last text ends around: ${lastTextEndTime/1000}s. Text moves at: ${textMoveStartTime/1000}s. Cake appears at: ${cakeAppearStartTime/1000}s`);
+
+        console.log(`Setup complete. Text moves at: ${textMoveStartTime/1000}s. Cake appears at: ${cakeAppearStartTime/1000}s`);
 
     </script>
 </body>
