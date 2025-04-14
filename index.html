@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sweet Compliments - Enhanced</title>
+    <title>Birthday Surprise!</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
@@ -17,17 +17,18 @@
 
         /* Body Styling */
         body {
-            font-family: 'Dancing Script', cursive; /* Apply cursive font */
+            font-family: 'Dancing Script', cursive;
             display: flex;
-            justify-content: center; /* Center horizontally */
-            align-items: center; /* Center vertically */
-            min-height: 100vh; /* Full viewport height */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             /* Darker, animated gradient background */
             background: linear-gradient(135deg, #8A2BE2, #C71585, #4b0082); /* Blue Violet -> Medium Violet Red -> Indigo */
-            background-size: 200% 200%; /* Make gradient larger than the body to allow movement */
-            animation: animateGradient 15s ease infinite; /* Animate the gradient */
-            overflow: hidden; /* Hide potential overflows */
-            color: #ffffff; /* White text color */
+            background-size: 200% 200%;
+            animation: animateGradient 15s ease infinite;
+            overflow: hidden; /* Prevent scrollbars during animations */
+            color: #ffffff;
+            position: relative; /* Needed for absolute positioning of cake */
         }
 
         /* Keyframes for the background gradient animation */
@@ -41,61 +42,102 @@
         .text-container {
             text-align: center;
             padding: 20px;
+            position: relative; /* To contain absolute positioned elements if needed */
+            z-index: 1; /* Keep text above cake initially */
         }
 
         /* Styling for each line of text */
         .text-line {
-            display: block; /* Each line on its own row */
-            font-size: 2.8rem; /* Slightly larger font */
-            margin-bottom: 18px; /* Space between lines */
-            opacity: 0; /* Start hidden */
-            /* Start slightly lower and smaller */
+            display: block;
+            font-size: 2.8rem;
+            margin-bottom: 18px;
+            opacity: 0;
             transform: translateY(25px) scale(0.9);
-            /* Add a subtle glow effect */
             text-shadow: 0 0 5px rgba(255, 255, 255, 0.7),
-                         0 0 10px rgba(255, 192, 203, 0.5); /* White and Pink glow */
-            /* Animation properties */
-            animation: fadeInSlideUpScale 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; /* Name, duration, easing, fill-mode */
+                         0 0 10px rgba(255, 192, 203, 0.5);
+            /* Initial appearance animation */
+            animation: fadeInSlideUpScale 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
 
-        /* Keyframes for the enhanced fade-in, slide-up, and scale animation */
+        /* Keyframes for the initial text appearance */
         @keyframes fadeInSlideUpScale {
             to {
-                opacity: 1; /* Fade in */
-                transform: translateY(0) scale(1); /* Move to original position and scale */
+                opacity: 1;
+                transform: translateY(0) scale(1);
             }
         }
 
-        /* Staggering the animation delays for each line (same as before) */
-        .text-line:nth-child(1) {
-            animation-delay: 0.5s;
+        /* Staggering the initial animation delays */
+        .text-line:nth-child(1) { animation-delay: 0.5s; }
+        .text-line:nth-child(2) { animation-delay: 2.3s; }
+        .text-line:nth-child(3) { animation-delay: 4.1s; }
+        .text-line:nth-child(4) { animation-delay: 5.9s; }
+        .text-line:nth-child(5) { animation-delay: 7.7s; }
+        .text-line:nth-child(6) { animation-delay: 9.5s; } /* Last text appears */
+
+        /* --- Animations for text moving off-screen --- */
+
+        /* Class added by JS to trigger move left */
+        .text-line.move-left {
+            animation: moveLeft 1.5s ease-in forwards;
         }
-        .text-line:nth-child(2) {
-            animation-delay: 2.3s; /* Adjusted timing slightly */
-        }
-        .text-line:nth-child(3) {
-            animation-delay: 4.1s;
-        }
-        .text-line:nth-child(4) {
-            animation-delay: 5.9s;
-        }
-        .text-line:nth-child(5) {
-            animation-delay: 7.7s;
-        }
-        .text-line:nth-child(6) {
-            animation-delay: 9.5s;
+        /* Class added by JS to trigger move right */
+        .text-line.move-right {
+            animation: moveRight 1.5s ease-in forwards;
         }
 
-        /* Responsive font size */
+        /* Keyframes for moving text left */
+        @keyframes moveLeft {
+            0% { transform: translateX(0) scale(1); opacity: 1; }
+            100% { transform: translateX(-150vw) scale(0.8); opacity: 0; } /* Move far left, shrink slightly, fade */
+        }
+
+        /* Keyframes for moving text right */
+        @keyframes moveRight {
+             0% { transform: translateX(0) scale(1); opacity: 1; }
+            100% { transform: translateX(150vw) scale(0.8); opacity: 0; } /* Move far right, shrink slightly, fade */
+        }
+
+        /* --- Cake Styling and Animation --- */
+
+        .cake-container {
+            position: absolute; /* Position relative to body */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Center the container */
+            opacity: 0; /* Start hidden */
+            transform-origin: center bottom; /* Scale from the bottom center */
+            z-index: 0; /* Initially behind text (or doesn't matter when text is gone) */
+        }
+
+        .cake-container.visible {
+             /* Cake appearance animation */
+            animation: cakeAppear 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards; /* Bouncy easing */
+            z-index: 2; /* Ensure cake is on top when visible */
+        }
+
+        #birthday-cake-svg {
+            width: 150px; /* Adjust size as needed */
+            height: auto;
+            display: block;
+            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3)); /* Add a shadow */
+        }
+
+        /* Keyframes for cake appearing */
+        @keyframes cakeAppear {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } /* Start small and transparent */
+            70% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } /* Overshoot scale slightly */
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); } /* Settle at final size */
+        }
+
+        /* Responsive adjustments */
         @media (max-width: 600px) {
-            .text-line {
-                font-size: 2rem; /* Adjust for smaller screens */
-            }
+            .text-line { font-size: 2rem; }
+            #birthday-cake-svg { width: 120px; }
         }
          @media (max-width: 400px) {
-            .text-line {
-                font-size: 1.7rem; /* Further adjust */
-            }
+            .text-line { font-size: 1.7rem; }
+            #birthday-cake-svg { width: 100px; }
         }
     </style>
 </head>
@@ -108,5 +150,76 @@
         <span class="text-line">You are so funny JSJSJS</span>
         <span class="text-line">You are so beautiful</span>
     </div>
+
+    <div class="cake-container" id="cakeContainer">
+        <svg id="birthday-cake-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="15" y="60" width="70" height="25" rx="5" ry="5" fill="#C71585"/> <rect x="20" y="40" width="60" height="20" rx="4" ry="4" fill="#FFC0CB"/> <rect x="25" y="25" width="50" height="15" rx="3" ry="3" fill="#E6E6FA"/> <rect x="35" y="15" width="5" height="15" fill="#FFF"/> <ellipse cx="37.5" cy="15" rx="2.5" ry="1.5" fill="#FFA500"/> <rect x="47.5" y="10" width="5" height="20" fill="#FFF"/> <ellipse cx="50" cy="10" rx="2.5" ry="1.5" fill="#FF8C00"/> <rect x="60" y="15" width="5" height="15" fill="#FFF"/> <ellipse cx="62.5" cy="15" rx="2.5" ry="1.5" fill="#FFA500"/> <circle cx="25" cy="32.5" r="5" fill="#E6E6FA"/>
+            <circle cx="35" cy="32.5" r="5" fill="#E6E6FA"/>
+            <circle cx="45" cy="32.5" r="5" fill="#E6E6FA"/>
+            <circle cx="55" cy="32.5" r="5" fill="#E6E6FA"/>
+            <circle cx="65" cy="32.5" r="5" fill="#E6E6FA"/>
+            <circle cx="75" cy="32.5" r="5" fill="#E6E6FA"/>
+        </svg>
+    </div>
+
+    <script>
+        // Get references to elements
+        const textLines = document.querySelectorAll('.text-line');
+        const cakeContainer = document.getElementById('cakeContainer');
+
+        // --- Configuration ---
+        const lastTextAnimationDelay = 9.5; // seconds (from CSS)
+        const textAppearDuration = 1.8; // seconds (from CSS)
+        const pauseBeforeTextMove = 1.5; // seconds (pause after last text appears)
+        const textMoveDuration = 1.5; // seconds (from CSS)
+        const pauseBeforeTextMoveTrigger = 0.1; // Small buffer before triggering move
+        const pauseBeforeCakeAppear = 0.5; // seconds (delay after text starts moving)
+
+        // Calculate when the last text finishes appearing
+        const lastTextEndTime = (lastTextAnimationDelay + textAppearDuration) * 1000; // in milliseconds
+
+        // Calculate when to trigger the text move animation
+        const textMoveStartTime = lastTextEndTime + (pauseBeforeTextMove * 1000);
+
+        // Calculate when to trigger the cake appearance
+        // It should start slightly after the text *starts* moving
+        const cakeAppearStartTime = textMoveStartTime + (pauseBeforeCakeAppear * 1000);
+
+
+        // --- Set Timeouts ---
+
+        // 1. Trigger text movement
+        setTimeout(() => {
+            console.log("Triggering text move animations...");
+            textLines.forEach((line, index) => {
+                // Alternate left and right movement
+                if (index % 2 === 0) { // Even index (0, 2, 4)
+                    line.classList.add('move-left');
+                } else { // Odd index (1, 3, 5)
+                    line.classList.add('move-right');
+                }
+                // Ensure the initial animation doesn't interfere if somehow still running
+                 line.style.animation = 'none'; // Clear initial animation just in case
+                 // Force reflow/repaint before applying new animation
+                 void line.offsetWidth;
+                 line.style.animation = ''; // Re-enable CSS-defined animations
+
+                 if (index % 2 === 0) {
+                     line.classList.add('move-left');
+                 } else {
+                     line.classList.add('move-right');
+                 }
+            });
+        }, textMoveStartTime);
+
+        // 2. Trigger cake appearance
+        setTimeout(() => {
+            console.log("Triggering cake appearance...");
+            cakeContainer.classList.add('visible');
+        }, cakeAppearStartTime);
+
+        console.log(`Setup complete. Last text ends around: ${lastTextEndTime/1000}s. Text moves at: ${textMoveStartTime/1000}s. Cake appears at: ${cakeAppearStartTime/1000}s`);
+
+    </script>
 </body>
 </html>
