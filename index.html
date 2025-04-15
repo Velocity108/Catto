@@ -1,115 +1,38 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Happy Birthday</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    body {
-      height: 100vh;
-      overflow: hidden;
-    }
-    .slider-container {
-      width: 100vw;
-      overflow: hidden;
-      position: relative;
-      touch-action: pan-y;
-    }
-    .slider {
-      display: flex;
-      transition: transform 0.3s ease-in-out;
-    }
-    .slide {
-      width: 100vw;
-      height: 100vh;
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      padding: 2rem;
-      text-align: center;
-    }
-    .slide1 { background: linear-gradient(to right, #ff6a00, #ee0979); }
-    .slide2 { background: linear-gradient(to right, #00c6ff, #0072ff); }
-    .slide3 { background: linear-gradient(to right, #f7971e, #ffd200); }.slide img {
-  max-width: 80%;
-  border-radius: 20px;
-  margin-bottom: 1rem;
-}
-
-h1 {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
-p {
-  font-size: 1.2rem;
-  max-width: 600px;
-}
-
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My First Web Page</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="slider-container" id="slider-container">
-    <div class="slider" id="slider">
-      <div class="slide slide1">
-        <img src="https://assets.onecompiler.app/43etahknn/43evh2vew/1000021912.jpg" alt="Birthday Image" />
-        <h1>Happy Birthday!</h1>
-        <p>Wishing you all the happiness and joy on your special day.</p>
-      </div>
-      <div class="slide slide2">
-        <h1>Celebrate You</h1>
-        <p>Today is the perfect day to remind you how amazing you are and how much you're loved. May this year be filled with wonderful surprises and unforgettable moments.</p>
-      </div>
-      <div class="slide slide3">
-        <h1>Special Message</h1>
-        <p>On this beautiful journey around the sun, I hope you find endless reasons to smile and a heart full of gratitude. Your presence lights up lives, and you deserve all the love and laughter the world can offer. Happy birthday!</p>
-      </div>
-    </div>
-  </div>  <script>
-    let currentSlide = 0;
-    const totalSlides = 3;
-    const slider = document.getElementById('slider');
-    const container = document.getElementById('slider-container');
-    let startX = 0;
-    let endX = 0;
-
-    container.addEventListener('touchstart', e => {
-      startX = e.touches[0].clientX;
-    });
-
-    container.addEventListener('touchend', e => {
-      endX = e.changedTouches[0].clientX;
-      handleSwipe();
-    });
-
-    function handleSwipe() {
-      const diff = startX - endX;
-      if (diff > 50) {
-        nextSlide();
-      } else if (diff < -50) {
-        prevSlide();
-      }
-    }
-
-    function updateSlide() {
-      slider.style.transform = `translateX(-${currentSlide * 100}vw)`;
-    }
-
-    function nextSlide() {
-      currentSlide = (currentSlide + 1) % totalSlides;
-      updateSlide();
-    }
-
-    function prevSlide() {
-      currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-      updateSlide();
-    }
-  </script></body>
+    <header>
+        <h1>Welcome to My Web Page</h1>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="home">
+            <h2>Home</h2>
+            <p>This is the home section.</p>
+        </section>
+        <section id="about">
+            <h2>About</h2>
+            <p>This is the about section.</p>
+        </section>
+        <section id="contact">
+            <h2>Contact</h2>
+            <p>This is the contact section.</p>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 My Web Page</p>
+    </footer>
+</body>
 </html>
