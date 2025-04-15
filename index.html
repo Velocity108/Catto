@@ -1,347 +1,115 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Birthday Surprise!</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
-    <style>
-        /* Basic Reset */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Birthday</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      height: 100vh;
+      overflow: hidden;
+    }
+    .slider-container {
+      width: 100vw;
+      overflow: hidden;
+      position: relative;
+      touch-action: pan-y;
+    }
+    .slider {
+      display: flex;
+      transition: transform 0.3s ease-in-out;
+    }
+    .slide {
+      width: 100vw;
+      height: 100vh;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    .slide1 { background: linear-gradient(to right, #ff6a00, #ee0979); }
+    .slide2 { background: linear-gradient(to right, #00c6ff, #0072ff); }
+    .slide3 { background: linear-gradient(to right, #f7971e, #ffd200); }.slide img {
+  max-width: 80%;
+  border-radius: 20px;
+  margin-bottom: 1rem;
+}
 
-        /* Body Styling */
-        body {
-            font-family: 'Dancing Script', cursive;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            /* Initial Gradient Background */
-            background: linear-gradient(135deg, #8A2BE2, #C71585, #4b0082);
-            background-size: 200% 200%;
-            animation: animateGradient 15s ease infinite;
-            overflow: hidden;
-            color: #ffffff;
-            position: relative;
-            transition: background 1.5s ease-in-out; /* Smooth background transition */
-        }
+h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+p {
+  font-size: 1.2rem;
+  max-width: 600px;
+}
 
-        /* Keyframes for the initial background gradient animation */
-        @keyframes animateGradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* --- New Background Theme --- */
-        body.theme-celebration {
-            background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e); /* Dark starry night gradient */
-            animation: none; /* Stop initial gradient animation */
-            /* Add subtle stars using pseudo-elements or multiple backgrounds if desired */
-        }
-
-        /* --- Text Styling (Mostly unchanged) --- */
-        .text-container {
-            text-align: center;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
-        }
-        .text-line {
-            display: block;
-            font-size: 2.8rem;
-            margin-bottom: 18px;
-            opacity: 0;
-            transform: translateY(25px) scale(0.9);
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.7),
-                         0 0 10px rgba(255, 192, 203, 0.5);
-            animation: fadeInSlideUpScale 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-        }
-        @keyframes fadeInSlideUpScale {
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .text-line:nth-child(1) { animation-delay: 0.5s; }
-        .text-line:nth-child(2) { animation-delay: 2.3s; }
-        .text-line:nth-child(3) { animation-delay: 4.1s; }
-        .text-line:nth-child(4) { animation-delay: 5.9s; }
-        .text-line:nth-child(5) { animation-delay: 7.7s; }
-        .text-line:nth-child(6) { animation-delay: 9.5s; }
-
-        /* Text move animations (unchanged) */
-        .text-line.move-left { animation: moveLeft 1.5s ease-in forwards; }
-        .text-line.move-right { animation: moveRight 1.5s ease-in forwards; }
-        @keyframes moveLeft {
-            0% { transform: translateX(0) scale(1); opacity: 1; }
-            100% { transform: translateX(-150vw) scale(0.8); opacity: 0; }
-        }
-        @keyframes moveRight {
-             0% { transform: translateX(0) scale(1); opacity: 1; }
-            100% { transform: translateX(150vw) scale(0.8); opacity: 0; }
-        }
-
-        /* --- Cake Styling and Animations --- */
-        .cake-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0;
-            transform-origin: center bottom;
-            z-index: 0;
-            cursor: pointer; /* Indicate it's clickable */
-            transition: opacity 0.5s, transform 0.5s; /* Smooth transitions */
-        }
-        .cake-container.visible {
-            animation: cakeAppear 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
-            z-index: 2;
-        }
-        @keyframes cakeAppear {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-            70% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
-            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        }
-
-        /* Cake Pop Animation */
-        .cake-container.popped {
-            animation: cakePop 0.5s ease-out forwards;
-            pointer-events: none; /* Disable further clicks */
-        }
-        @keyframes cakePop {
-            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; } /* Slightly expand */
-            100% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } /* Shrink and fade */
-        }
-
-        #birthday-cake-svg {
-            width: 150px;
-            height: auto;
-            display: block;
-            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
-        }
-
-        /* --- Balloon Styling and Animations --- */
-        #balloon-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            pointer-events: none; /* Initially ignore clicks */
-            z-index: 3; /* Balloons float above everything */
-        }
-
-        .balloon {
-            position: absolute;
-            bottom: -150px; /* Start below screen */
-            width: 60px;
-            height: 75px;
-            background-color: red; /* Default color, will be randomized */
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; /* Balloon shape */
-            cursor: pointer;
-            pointer-events: auto; /* Balloons themselves are clickable */
-            animation: floatUp 10s linear infinite; /* Float animation */
-            /* Add a string */
-            display: flex;
-            justify-content: center;
-        }
-        .balloon::after {
-            content: '';
-            position: absolute;
-            bottom: -20px; /* Position string below balloon */
-            width: 1px;
-            height: 25px; /* String length */
-            background-color: rgba(255, 255, 255, 0.7); /* Light grey string */
-        }
-
-        @keyframes floatUp {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-120vh); } /* Float up and off screen */
-        }
-
-        /* Balloon Pop Animation */
-        .balloon.popped {
-            animation: balloonPop 0.3s ease-out forwards;
-            pointer-events: none; /* Disable clicks once popped */
-        }
-        @keyframes balloonPop {
-            0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(1.5); opacity: 0; } /* Expand and fade */
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 600px) {
-            .text-line { font-size: 2rem; }
-            #birthday-cake-svg { width: 120px; }
-            .balloon { width: 50px; height: 65px; }
-        }
-         @media (max-width: 400px) {
-            .text-line { font-size: 1.7rem; }
-            #birthday-cake-svg { width: 100px; }
-            .balloon { width: 40px; height: 55px; }
-        }
-    </style>
+  </style>
 </head>
 <body>
-    <div class="text-container">
-        <span class="text-line">You are so sweet</span>
-        <span class="text-line">You are so kind</span>
-        <span class="text-line">You are so adorable</span>
-        <span class="text-line">You are so amazing</span>
-        <span class="text-line">You are so funny JSJSJS</span>
-        <span class="text-line">You are so beautiful</span>
+  <div class="slider-container" id="slider-container">
+    <div class="slider" id="slider">
+      <div class="slide slide1">
+        <img src="https://assets.onecompiler.app/43etahknn/43evh2vew/1000021912.jpg" alt="Birthday Image" />
+        <h1>Happy Birthday!</h1>
+        <p>Wishing you all the happiness and joy on your special day.</p>
+      </div>
+      <div class="slide slide2">
+        <h1>Celebrate You</h1>
+        <p>Today is the perfect day to remind you how amazing you are and how much you're loved. May this year be filled with wonderful surprises and unforgettable moments.</p>
+      </div>
+      <div class="slide slide3">
+        <h1>Special Message</h1>
+        <p>On this beautiful journey around the sun, I hope you find endless reasons to smile and a heart full of gratitude. Your presence lights up lives, and you deserve all the love and laughter the world can offer. Happy birthday!</p>
+      </div>
     </div>
+  </div>  <script>
+    let currentSlide = 0;
+    const totalSlides = 3;
+    const slider = document.getElementById('slider');
+    const container = document.getElementById('slider-container');
+    let startX = 0;
+    let endX = 0;
 
-    <div class="cake-container" id="cakeContainer">
-        <svg id="birthday-cake-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <rect x="15" y="60" width="70" height="25" rx="5" ry="5" fill="#C71585"/>
-            <rect x="20" y="40" width="60" height="20" rx="4" ry="4" fill="#FFC0CB"/>
-            <rect x="25" y="25" width="50" height="15" rx="3" ry="3" fill="#E6E6FA"/>
-            <rect x="35" y="15" width="5" height="15" fill="#FFF"/>
-            <ellipse cx="37.5" cy="15" rx="2.5" ry="1.5" fill="#FFA500"/>
-            <rect x="47.5" y="10" width="5" height="20" fill="#FFF"/>
-            <ellipse cx="50" cy="10" rx="2.5" ry="1.5" fill="#FF8C00"/>
-            <rect x="60" y="15" width="5" height="15" fill="#FFF"/>
-            <ellipse cx="62.5" cy="15" rx="2.5" ry="1.5" fill="#FFA500"/>
-            <circle cx="25" cy="32.5" r="5" fill="#E6E6FA"/>
-            <circle cx="35" cy="32.5" r="5" fill="#E6E6FA"/>
-            <circle cx="45" cy="32.5" r="5" fill="#E6E6FA"/>
-            <circle cx="55" cy="32.5" r="5" fill="#E6E6FA"/>
-            <circle cx="65" cy="32.5" r="5" fill="#E6E6FA"/>
-            <circle cx="75" cy="32.5" r="5" fill="#E6E6FA"/>
-        </svg>
-    </div>
+    container.addEventListener('touchstart', e => {
+      startX = e.touches[0].clientX;
+    });
 
-    <div id="balloon-container"></div>
+    container.addEventListener('touchend', e => {
+      endX = e.changedTouches[0].clientX;
+      handleSwipe();
+    });
 
-    <script>
-        // DOM References
-        const textLines = document.querySelectorAll('.text-line');
-        const cakeContainer = document.getElementById('cakeContainer');
-        const balloonContainer = document.getElementById('balloon-container');
-        const body = document.body;
+    function handleSwipe() {
+      const diff = startX - endX;
+      if (diff > 50) {
+        nextSlide();
+      } else if (diff < -50) {
+        prevSlide();
+      }
+    }
 
-        // --- Configuration ---
-        const lastTextAnimationDelay = 9.5; // s
-        const textAppearDuration = 1.8; // s
-        const pauseBeforeTextMove = 1.5; // s
-        const pauseBeforeCakeAppear = 0.5; // s
-        const cakePopDuration = 0.5; // s (match CSS animation)
-        const balloonPopDuration = 0.3; // s (match CSS animation)
-        const balloonInterval = 1500; // ms (how often new balloons appear)
-        let balloonTimerId = null; // To store the interval ID
+    function updateSlide() {
+      slider.style.transform = `translateX(-${currentSlide * 100}vw)`;
+    }
 
-        // --- Timing Calculations ---
-        const lastTextEndTime = (lastTextAnimationDelay + textAppearDuration) * 1000;
-        const textMoveStartTime = lastTextEndTime + (pauseBeforeTextMove * 1000);
-        const cakeAppearStartTime = textMoveStartTime + (pauseBeforeCakeAppear * 1000);
+    function nextSlide() {
+      currentSlide = (currentSlide + 1) % totalSlides;
+      updateSlide();
+    }
 
-        // --- Balloon Colors ---
-        const balloonColors = ['#ff6b6b', '#f06595', '#cc5de8', '#845ef7', '#5c7cfa', '#339af0', '#22b8cf', '#20c997', '#51cf66', '#fcc419', '#ff922b'];
-
-        // --- Functions ---
-
-        // Function to create a single balloon
-        function createBalloon() {
-            const balloon = document.createElement('div');
-            balloon.classList.add('balloon');
-
-            // Randomize properties
-            const randomColor = balloonColors[Math.floor(Math.random() * balloonColors.length)];
-            const randomLeft = Math.random() * 90; // % position from left (0-90 to avoid edge)
-            const randomDuration = Math.random() * 5 + 8; // Float duration between 8-13 seconds
-
-            balloon.style.backgroundColor = randomColor;
-            balloon.style.left = `${randomLeft}%`;
-            balloon.style.animationDuration = `${randomDuration}s`; // Vary float speed
-
-            // Add pop event listener
-            balloon.addEventListener('click', () => {
-                popBalloon(balloon);
-            }, { once: true }); // Listener only fires once
-
-            // Add listener for when animation ends (balloon floats off screen)
-            balloon.addEventListener('animationend', (event) => {
-                 // Only remove if it's the 'floatUp' animation ending, not the 'balloonPop'
-                 if (event.animationName === 'floatUp' && balloon.parentNode) {
-                     balloon.remove();
-                 }
-            });
-
-
-            balloonContainer.appendChild(balloon);
-        }
-
-        // Function to pop a balloon
-        function popBalloon(balloon) {
-            balloon.classList.add('popped');
-            // Remove the balloon element after the pop animation finishes
-            setTimeout(() => {
-                if (balloon.parentNode) { // Check if it hasn't already been removed
-                    balloon.remove();
-                }
-            }, balloonPopDuration * 1000);
-        }
-
-        // Function to start the stream of balloons
-        function startBalloonStream() {
-            if (balloonTimerId === null) { // Prevent multiple intervals
-                 // Enable clicks within the balloon container area
-                balloonContainer.style.pointerEvents = 'auto';
-                // Start creating balloons
-                balloonTimerId = setInterval(createBalloon, balloonInterval);
-                console.log("Balloon stream started.");
-            }
-        }
-
-        // Function to handle cake click
-        function handleCakeClick() {
-            console.log("Cake clicked!");
-            // 1. Add 'popped' class to cake for animation
-            cakeContainer.classList.add('popped');
-
-            // 2. Change background theme
-            body.classList.add('theme-celebration');
-
-            // 3. Remove cake from DOM after pop animation (optional, but cleans up)
-            setTimeout(() => {
-                cakeContainer.style.display = 'none';
-            }, cakePopDuration * 1000);
-
-            // 4. Start the balloon stream
-            startBalloonStream();
-
-            // Remove the event listener so it can't be clicked again
-            cakeContainer.removeEventListener('click', handleCakeClick);
-        }
-
-
-        // --- Set Initial Timeouts & Event Listeners ---
-
-        // 1. Trigger text movement
-        setTimeout(() => {
-            textLines.forEach((line, index) => {
-                line.classList.add(index % 2 === 0 ? 'move-left' : 'move-right');
-            });
-        }, textMoveStartTime);
-
-        // 2. Trigger cake appearance
-        setTimeout(() => {
-            cakeContainer.classList.add('visible');
-            // Add click listener ONLY after the cake is visible and animation likely started
-            cakeContainer.addEventListener('click', handleCakeClick);
-             console.log("Cake appeared, listener added.");
-        }, cakeAppearStartTime);
-
-
-        console.log(`Setup complete. Text moves at: ${textMoveStartTime/1000}s. Cake appears at: ${cakeAppearStartTime/1000}s`);
-
-    </script>
-</body>
+    function prevSlide() {
+      currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+      updateSlide();
+    }
+  </script></body>
 </html>
