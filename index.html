@@ -1,254 +1,222 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Animated Sections</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Message</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the body */
+        body {
+            /* Set the initial background image */
+            background-image: url('https://assets.onecompiler.app/43etahknn/43ey8gb7c/1000022040.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: white;
+            padding: 2rem;
+            transition: background-image 1.5s ease-in-out, background-color 1.5s ease-in-out; /* Smooth transition for background-image and potential fallback */
+            font-family: 'Inter', sans-serif; /* Using Inter font */
+        }
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond&display=swap" rel="stylesheet">
+        /* Overlay to make BG image darker, now more flexible */
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0); /* Start with transparent */
+            transition: background-color 1.5s ease-in-out; /* transition */
+            z-index: -1; /* below everything else */
+            pointer-events: none;  /* So it doesn't interfere with clicks */
+        }
 
-  <!-- GSAP and plugins -->
-  <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
-  <script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
-  <script src="https://unpkg.com/gsap@3/dist/SplitText.min.js"></script>
-  <script src="https://unpkg.com/gsap@3/dist/Observer.min.js"></script>
 
-  <style>
-    :root {
-      --bg-gradient: linear-gradient(
-        180deg,
-        rgba(0, 0, 0, 0.6) 0%,
-        rgba(0, 0, 0, 0.3) 100%
-      );
-    }
+        /* Container for the messages */
+        #messageContainer {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 20; /* Above the overlay */
+            color: white;
+            text-align: center;
+            display: none; /* Initially hidden */
+            flex-direction: column; /* Stack messages vertically */
+            align-items: center;
+            width: 90%; /* Ensure text wraps on smaller screens */
+            max-width: 600px; /* Max width for readability */
+        }
 
-    * {
-      box-sizing: border-box;
-      user-select: none;
-      margin: 0;
-      padding: 0;
-    }
+        /* Individual message styling */
+        .message {
+            opacity: 0; /* Initially invisible */
+            transition: opacity 1.5s ease-in-out; /* Fade duration */
+            margin-bottom: 1.5rem; /* Space between messages */
+            font-size: 1.5rem; /* Smaller text size (was 2.25rem) */
+            font-weight: 400; /* Normal weight for cursive */
+            line-height: 1.6; /* Improved line height for better readability */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Slight text shadow */
+            font-family: 'Dancing Script', cursive; /* Use Dancing Script */
+        }
+        .message.visible {
+            opacity: 1; /* Fade-in effect */
+        }
 
-    a {
-      color: #fff;
-      text-decoration: none;
-    }
+        /* Style to hide original content when messages are active */
+        body.messages-active > *:not(#overlay):not(#messageContainer) {
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+            pointer-events: none; /* Prevent interaction with hidden elements */
+        }
 
-    body {
-      height: 100vh;
-      color: white;
-      background: black;
-      font-family: "Cormorant Garamond", serif;
-      text-transform: uppercase;
-    }
 
-    h2 {
-      font-size: clamp(1rem, 5vw, 5rem);
-      font-weight: 400;
-      text-align: center;
-      letter-spacing: 0.5em;
-      margin-right: -0.5em;
-      color: hsl(0, 0, 80%);
-      width: 90vw;
-      max-width: 1200px;
-    }
+        /* Button Styling */
+        #thankYouButton {
+            display: block; /* Needed for margin auto */
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 2rem; /* Space above button */
+            padding: 1rem 2rem; /* Button padding */
+            font-size: 1rem; /* font size */
+            font-weight: 600; /* weight */
+            background-color: #ec4899; /* Vibrant pink */
+            color: white;
+            border: none;
+            border-radius: 0.75rem; /* rounded corners */
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Increased shadow */
+            text-align: center;
+        }
+        #thankYouButton:hover {
+            background-color: #db2777; /* Darker pink */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Increased shadow on hover*/
+        }
+        #thankYouButton:active {
+            transform: scale(0.95); /* Slightly more pronounced click effect */
+            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3); /* Smaller shadow on active */
+        }
 
-    header {
-      position: fixed;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 5%;
-      width: 100%;
-      z-index: 3;
-      height: 7em;
-      font-family: "Bebas Neue", sans-serif;
-      font-size: clamp(0.66rem, 2vw, 1rem);
-      letter-spacing: 0.5em;
-    }
-
-    section {
-      height: 100%;
-      width: 100%;
-      top: 0;
-      position: fixed;
-      visibility: hidden;
-    }
-
-    .outer,
-    .inner {
-      width: 100%;
-      height: 100%;
-      overflow-y: hidden;
-    }
-
-    .bg {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: absolute;
-      height: 100%;
-      width: 100%;
-      top: 0;
-      background-size: cover;
-      background-position: center;
-    }
-
-    .bg h2 {
-      z-index: 2;
-    }
-
-    .clip-text {
-      overflow: hidden;
-    }
-
-    .first .bg {
-      background-image: var(--bg-gradient), url("https://images.unsplash.com/photo-1617478755490-e21232a5eeaf?crop=entropy&cs=srgb&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTYxNzU1NjM5NA&ixlib=rb-1.2.1&q=75&w=1920");
-    }
-
-    .second .bg {
-      background-image: var(--bg-gradient), url("https://images.unsplash.com/photo-1617128734662-66da6c1d3505?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTYxNzc3NTM3MA&ixlib=rb-1.2.1&q=75&w=1920");
-    }
-
-    .third .bg {
-      background-image: var(--bg-gradient), url("https://images.unsplash.com/photo-1617438817509-70e91ad264a5?crop=entropy&cs=srgb&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTYxNzU2MDk4Mg&ixlib=rb-1.2.1&q=75&w=1920");
-    }
-
-    .fourth .bg {
-      background-image: var(--bg-gradient), url("https://images.unsplash.com/photo-1617412327653-c29093585207?crop=entropy&cs=srgb&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTYxNzU2MDgzMQ&ixlib=rb-1.2.1&q=75&w=1920");
-    }
-
-    .fifth .bg {
-      background-image: var(--bg-gradient), url("https://images.unsplash.com/photo-1617141636403-f511e2d5dc17?crop=entropy&cs=srgb&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTYxODAzMjc4Mw&ixlib=rb-1.2.1&q=75&w=1920");
-      background-position: 50% 45%;
-    }
-
-    h2 * {
-      will-change: transform;
-    }
-  </style>
+        /* Ensure footer stays at bottom initially if content is short */
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+        main {
+            flex-grow: 1;
+        }
+        header h1{
+           font-size: 2.5rem; /* heading size */
+           font-weight: 700;  /* weight */
+           letter-spacing: 0.1em;
+           text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+        }
+        header p{
+            font-size: 1.2rem;
+            font-weight: 500;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+        .bg-black{
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+    </style>
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Dancing+Script&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="font-sans"> <div id="overlay"></div>
 
-  <header>
-    <div>Animated Sections</div>
-    <div><a href="https://codepen.io/BrianCross/pen/PoWapLP">Original By Brian</a></div>
-  </header>
+    <header class="text-center mb-12">
+        <h1 class="text-4xl font-bold mb-4">Welcome to the Page</h1>
+        <p class="text-lg">This page features a beautiful background image.</p>
+    </header>
 
-  <section class="first">
-    <div class="outer">
-      <div class="inner">
-        <div class="bg one">
-          <h2 class="section-heading">Scroll down</h2>
-        </div>
-      </div>
+    <main>
+        <section class="bg-black bg-opacity-50 p-6 rounded-lg shadow-lg mb-8 max-w-3xl mx-auto"> <h2 class="text-2xl font-semibold mb-3">About This Page</h2>
+            <p>
+                The background of this page is set using CSS. The image is configured to cover the entire viewport, remain centered, and not repeat.
+                Click the button below for a special message.
+            </p>
+        </section>
+
+        <button id="thankYouButton">Thank you for everything</button>
+
+    </main>
+
+    <footer class="text-center mt-12 text-sm">
+        <p>&copy; 2025 Your Website Name. All rights reserved.</p>
+    </footer>
+
+    <div id="messageContainer">
+        <p class="message">I can't describe how grateful I am to have you</p>
+        <p class="message">You have done so muchh for me Miraah</p>
+        <p class="message">Forget everything and just enjoy your day</p>
+        <p class="message">Again I wish you</p>
+        <p class="message">A very Happy Birthday to you 💗</p>
     </div>
-  </section>
-  <section class="second">
-    <div class="outer">
-      <div class="inner">
-        <div class="bg">
-          <h2 class="section-heading">Animated with GSAP</h2>
-        </div>
-      </div>
-    </div>
-  </section>
-  <section class="third">
-    <div class="outer">
-      <div class="inner">
-        <div class="bg">
-          <h2 class="section-heading">GreenSock</h2>
-        </div>
-      </div>
-    </div>
-  </section>
-  <section class="fourth">
-    <div class="outer">
-      <div class="inner">
-        <div class="bg">
-          <h2 class="section-heading">Animation platform</h2>
-        </div>
-      </div>
-    </div>
-  </section>
-  <section class="fifth">
-    <div class="outer">
-      <div class="inner">
-        <div class="bg">
-          <h2 class="section-heading">Keep scrolling</h2>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <script>
-    gsap.registerPlugin(Observer);
+    <script>
+        // Get references to the necessary elements
+        const thankYouButton = document.getElementById('thankYouButton');
+        const overlay = document.getElementById('overlay');
+        const messageContainer = document.getElementById('messageContainer');
+        const messages = document.querySelectorAll('#messageContainer .message');
+        const body = document.body;
 
-    let sections = document.querySelectorAll("section"),
-        images = document.querySelectorAll(".bg"),
-        headings = gsap.utils.toArray(".section-heading"),
-        outerWrappers = gsap.utils.toArray(".outer"),
-        innerWrappers = gsap.utils.toArray(".inner"),
-        splitHeadings = headings.map(heading => new SplitText(heading, { type: "chars,words,lines", linesClass: "clip-text" })),
-        currentIndex = -1,
-        wrap = gsap.utils.wrap(0, sections.length),
-        animating;
+        // Add event listener to the button
+        thankYouButton.addEventListener('click', () => {
+            // 1. Hide the button immediately
+            thankYouButton.style.display = 'none';
 
-    gsap.set(outerWrappers, { yPercent: 100 });
-    gsap.set(innerWrappers, { yPercent: -100 });
+            // 2.  Fade the current background to black using the overlay
+            overlay.style.backgroundColor = 'rgba(0, 0, 0, 1)'; // Fade to black
 
-    function gotoSection(index, direction) {
-      index = wrap(index);
-      animating = true;
-      let fromTop = direction === -1,
-          dFactor = fromTop ? -1 : 1,
-          tl = gsap.timeline({
-            defaults: { duration: 1.25, ease: "power1.inOut" },
-            onComplete: () => animating = false
-          });
+            // 3. Change the background image *after* the fade to black is complete
+            setTimeout(() => {
+                body.style.backgroundImage = "url('https://assets.onecompiler.app/43etahknn/43ey8gb7c/1000022050.jpg')";
+                overlay.style.backgroundColor = 'rgba(0, 0, 0, 0)'; // Reset overlay to transparent
+            }, 1500); // 1500ms is the duration of the fade transition
 
-      if (currentIndex >= 0) {
-        gsap.set(sections[currentIndex], { zIndex: 0 });
-        tl.to(images[currentIndex], { yPercent: -15 * dFactor })
-          .set(sections[currentIndex], { autoAlpha: 0 });
-      }
+            // 4. Add class to body to start hiding original content
+            body.classList.add('messages-active');
 
-      gsap.set(sections[index], { autoAlpha: 1, zIndex: 1 });
-      tl.fromTo([outerWrappers[index], innerWrappers[index]], { 
-          yPercent: i => i ? -100 * dFactor : 100 * dFactor
-        }, { 
-          yPercent: 0 
-        }, 0)
-        .fromTo(images[index], { yPercent: 15 * dFactor }, { yPercent: 0 }, 0)
-        .fromTo(splitHeadings[index].chars, { 
-            autoAlpha: 0, 
-            yPercent: 150 * dFactor
-        }, {
-            autoAlpha: 1,
-            yPercent: 0,
-            duration: 1,
-            ease: "power2",
-            stagger: {
-              each: 0.02,
-              from: "random"
-            }
-          }, 0.2);
+            // 5. Show the message container (will be positioned by CSS)
+            // Wait slightly for the overlay to start fading in
+            setTimeout(() => {
+                 messageContainer.style.display = 'flex';
+            }, 500); // Display container slightly after overlay starts fading
 
-      currentIndex = index;
-    }
+            // 6. Fade in messages one by one
+            let delay = 1500; // Start fading first message after overlay is mostly visible
+            const fadeInDuration = 1500; // Matches CSS transition duration
+            const delayBetweenMessages = 2500; // Time between the start of each message's fade-in
 
-    Observer.create({
-      type: "wheel,touch,pointer",
-      wheelSpeed: -1,
-      onDown: () => !animating && gotoSection(currentIndex - 1, -1),
-      onUp: () => !animating && gotoSection(currentIndex + 1, 1),
-      tolerance: 10,
-      preventDefault: true
-    });
+            messages.forEach((msg, index) => {
+                setTimeout(() => {
+                    msg.classList.add('visible'); // Add class to trigger CSS fade-in
+                }, delay + index * delayBetweenMessages);
+            });
+        });
 
-    gotoSection(0, 1);
-  </script>
+        // Optional: Handle background image loading error
+        const img = new Image();
+        img.src = 'https://assets.onecompiler.app/43etahknn/43ey8gb7c/1000022040.jpg';
+        img.onerror = function() {
+            console.error('Background image failed to load.');
+            // Optional: Fallback to a solid color if image fails
+            // document.body.style.backgroundImage = 'none';
+            // document.body.style.backgroundColor = '#222'; // Dark fallback color
+        };
+        const img2 = new Image();
+        img2.src = 'https://assets.onecompiler.app/43etahknn/43ey8gb7c/1000022050.jpg';
+        img2.onerror = function() {
+            console.error('Second background image failed to load.');
+        }
+    </script>
+
 </body>
 </html>
